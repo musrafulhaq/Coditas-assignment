@@ -1,0 +1,29 @@
+---
+- name: Provision EC2 instance
+  hosts: localhost
+  vars:
+      region:   us-east-1
+      ami:      ami-05fa00d4c63e32376
+      set_dns:  False
+      instance: t1.micro
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Launch instance
+      ec2:
+        keypair=shared
+        instance_type={{ instance }}
+        image={{ ami }}
+        region={{ region }}
+        wait=yes
+      register: ec2
+
+
+- name:  Set up Jenkins
+  hosts: launched
+  gather_facts: true
+  sudo: yes
+
+
+  roles:
+    - { role: jenkins, tags: ["jenkins"] }
